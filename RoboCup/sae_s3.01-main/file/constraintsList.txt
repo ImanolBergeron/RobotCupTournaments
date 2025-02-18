@@ -1,0 +1,19 @@
+-- debut competition < fin competition
+-- debut championnat < fin championnat
+-- debut tournoi < fin tournoi
+-- Debut tournoi = fin championnat (On peut ne pas avoir la date de changement)
+-- debut creneau < fin creneau
+-- debut et fin creneau [0;23]
+-- noms uniques
+-- scores positifs
+-- teams différentes dans rencontre
+-- Qu'un meeting par championnat ou par tournoi avec les deux teams
+-- une team est enregistrée qu'une fois a une compétition
+-- les roles doivent etre valides roles IN ('ROLE_ADMIN', 'ROLE_ORGA', 'ROLE_USER')
+-- un team owner doit etre ROLE_USER
+-- un organisateur doit etre ROLE_ORGA
+-- l'état d'une rencontre doit etre dans 'TO_PLAY', 'PLAYED', 'GAVE UP'
+-- Compétition une seule a la fois
+-- 1 rencontre par terrain par créneau (pas de chevauchement)
+-- Rencontre a soit un championnat soit un tournoi (pas aucun et pas les deux)
+-- Chaque meeting se passe sur un terrain relié a la meme compétition
