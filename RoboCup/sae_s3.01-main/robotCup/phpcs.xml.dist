@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<ruleset name="Symfony">
+    <description>Règles PSR-12 pour Symfony</description>
+
+    <file>src/</file>
+    <file>tests/</file>
+
+    <arg name="basepath" value="."/>
+    <arg name="colors"/>
+    <arg value="p"/>
+
+    <rule ref="PSR12"/>
+</ruleset>

@@ -1,0 +1,148 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Matchs - RobotCup{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        #match-stats table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #1a1e2d;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+        #match-stats th {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+        }
+        #match-stats td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #2d3748;
+            color: #e2e8f0;
+        }
+        #match-stats .position-medal {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            border-radius: 50%;
+            color: white;
+            font-weight: bold;
+        }
+        #match-stats .gold { background: #fbbf24; }
+        #match-stats .silver { background: #9ca3af; }
+        #match-stats .bronze { background: #92400e; }
+        #match-stats .normal { background: #4b5563; }
+        #match-stats .win { color: #4ade80; }
+        #match-stats .draw { color: #fbbf24; }
+        #match-stats .loss { color: #ef4444; }
+        #match-stats .points { color: #3b82f6; font-weight: bold; font-size: 1.2em; }
+
+        /* Style pour le bouton de la ligne */
+        #match-stats tbody tr {
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #match-stats tbody tr:hover {
+            filter: brightness(1.5) contrast(1.5)
+        }
+
+        #match-stats a {
+            display: block;
+            width: 100%;
+            height: 100%;
+            text-decoration: none;
+            color: inherit;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    {{ parent() }}
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger">
+            {{ message }}
+        </div>
+    {% endfor %}
+    <div id="match-stats">
+        <table>
+            <thead>
+                <tr>
+                    <th>Position</th>
+                    <th>Équipe</th>
+                    <th>MJ</th>
+                    <th>V</th>
+                    <th>N</th>
+                    <th>D</th>
+                    <th>BP</th>
+                    <th>BC</th>
+                    <th>+/-</th>
+                    <th>Points</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stat in teamStats %}
+                    {% set index = loop.index0 %}
+                    <tr onclick="window.location.href='{{ path('app_team_matchs', {'id': stat.team_id}) }}'">
+                        <td>
+                            <span class="position-medal 
+                                {% if index == 0 %}gold{% elseif index == 1 %}silver{% elseif index == 2 %}bronze{% else %}normal{% endif %}
+                            ">{{ index + 1 }}</span>
+                        </td>
+                        <td>{{ stat.team_name }}</td>
+                        <td>{{ stat.matches_played }}</td>
+                        <td class="win">{{ stat.total_wins }}</td>
+                        <td class="draw">{{ stat.total_draws }}</td>
+                        <td class="loss">{{ stat.total_losses }}</td>
+                        <td>{{ stat.goals_scored }}</td>
+                        <td>{{ stat.goals_conceded }}</td>
+                        <td>{{ stat.goals_scored - stat.goals_conceded }}</td>
+                        <td class="points">{{ stat.total_score }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div style="
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding: 20px;
+            background: #2d3748;
+            border-radius: 0 0 8px 8px;
+            text-align: center;
+        ">
+            <div>
+                <div style="color: #9ca3af; font-size: 0.9em; margin-bottom: 5px;">Victoire</div>
+                <div style="color: #4ade80; font-size: 1.2em; font-weight: bold;">3 pts</div>
+            </div>
+            <div>
+                <div style="color: #9ca3af; font-size: 0.9em; margin-bottom: 5px;">Nul</div>
+                <div style="color: #fbbf24; font-size: 1.2em; font-weight: bold;">1 pt</div>
+            </div>
+            <div>
+                <div style="color: #9ca3af; font-size: 0.9em; margin-bottom: 5px;">Défaite</div>
+                <div style="color: #ef4444; font-size: 1.2em; font-weight: bold;">0 pt</div>
+            </div>
+            <div>
+                <div style="color: #9ca3af; font-size: 0.9em; margin-bottom: 5px;">Total équipes</div>
+                <div style="color: #3b82f6; font-size: 1.2em; font-weight: bold;">{{ teamStats|length }}</div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

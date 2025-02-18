@@ -1,0 +1,197 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Planning - RobotCup{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow-y: auto; /* Activer le défilement vertical */
+        }
+
+        #match-stats {
+            padding: 1rem;
+            max-width: 100%;
+            overflow-x: auto; /* Activer le défilement horizontal pour le tableau */
+        }
+
+        #match-stats table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #1a1e2d;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+
+        #match-stats th {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+            position: sticky; /* Rendre les en-têtes visibles pendant le défilement */
+            top: 0;
+            z-index: 1;
+        }
+
+        #match-stats td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #2d3748;
+            color: #e2e8f0;
+        }
+
+        #match-stats tbody tr {
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #match-stats tbody tr:hover {
+            filter: brightness(1.5) contrast(1.5);
+        }
+
+        h1 {
+            margin-top: 1%;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Styles spécifiques au tableau */
+        .table-wrapper {
+            max-height: 80vh; /* Limiter la hauteur du tableau pour permettre un défilement */
+            overflow-y: auto; /* Activer le défilement vertical à l'intérieur du tableau */
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0d1117;
+            color: #e2e8f0;
+        }
+        td{
+            border-right : solid 1px rgb(133, 142, 153);
+        }
+
+        #contener-match{
+            border-bottom : solid 1px rgb(133, 142, 153);
+        }
+
+        #contener-match:hover{
+            color : #2d3748 ;
+        }
+        tr:hover{
+            pointer-events: none !important;
+        }
+
+        #top{
+            display : flex;
+            justify-content : space-evenly;
+        }
+        #top .bi-caret-left, #top .bi-caret-right {
+            font-size: 3rem; 
+            cursor: pointer;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    {{ parent() }}
+
+    <div id="match-stats">
+    {% set currentDate = date|date("Y-m-d") %}
+    {% if semaine < 0 %}
+        {% set currentDate = date|date_modify("-" ~ (semaine) ~ " weeks") %}
+    {% else %}
+        {% set currentDate = date|date_modify("+" ~ (semaine) ~ " weeks") %}
+    {% endif %}
+    {% set weekNumber = currentDate|date("W") %}
+    {% set firstDayOfYear = currentDate|date("Y-01-01") %}
+    {% set firstDayOfWeek = firstDayOfYear|date_modify("+" ~ (weekNumber - 1) ~ " weeks") %}
+    {% set firstDayOfWeek = firstDayOfWeek|date_modify("monday this week") %}
+    {% set lastDayOfWeek = firstDayOfWeek|date_modify("+6 days") %}
+    <div id="top">
+        <div id="triangle-gauche">
+            <a href="{{path('app_Planning',{'semaine': semaine - 1,'id': competition}) }}">
+                <i class="bi bi-caret-left"></i>
+                </a>
+        </div>
+
+        <h1>SEMAINE DU {{ firstDayOfWeek|date('d/m/Y') }}</h1>
+
+        <div id="triangle-droite">
+            <a href="{{path('app_Planning',{'semaine': semaine + 1,'id': competition}) }}">
+                <i class="bi bi-caret-right"></i>
+            </a>
+        </div>
+    </div>
+        <div class="table-wrapper">
+        
+            <table>
+                <thead>
+                    <tr>
+                        <th>HOUR</th>
+                        <th>LUNDI</th>
+                        <th>MARDI</th>
+                        <th>MERCREDI</th>
+                        <th>JEUDI</th>
+                        <th>VENDREDI</th>
+                        <th>SAMEDI</th>
+                        <th>DIMANCHE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for hour in 8..18 %}
+                        <tr>
+                            <td>{{ hour }} h </td>
+                            {% for day in 1..7 %}
+                                <td>
+                                    {% for meeting in meetings %}
+                                        {% for slot in slots %}
+                                            {% if slot.id == meeting.time_slot_id %}
+                                                {% if (slot.start|date("Y-m-d") > firstDayOfWeek|date("Y-m-d")) and (slot.start|date("Y-m-d") < lastDayOfWeek|date("Y-m-d"))%}
+                                                    {% if slot.start|date('H') == hour %}
+                                                        {% set meeting_day = slot.start|date('N') %}
+                                                        {% if meeting_day == day %}
+                                                            {% set equipeA = 'Equipe 1' %}
+                                                            {% set equipeB = 'Equipe 2' %}
+                                                            {% for team in teams %}
+                                                                {% if meeting.green_team_id == team.id %}
+                                                                    {% set equipeA = team.name %}
+                                                                {% endif %}
+                                                                {% if meeting.blue_team_id == team.id %}
+                                                                    {% set equipeB = team.name %}
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                                <div id="contener-match">
+                                                                    <div>{{equipeA}} VS {{equipeB}}</div>
+                                                                    <div>{{ slot.start|date('H:i') }} - {{ slot.end|date('H:i') }}</div>
+                                                                    <div>terrain : {{ meeting.stage_id }}</div>
+                                                                </div>     
+                                                        {% endif %}
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endfor %}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{parent()}}
+    <script>
+        //ici rajouter de quoi mettre le numero de la semaine en GET
+    </script>
+{% endblock %}

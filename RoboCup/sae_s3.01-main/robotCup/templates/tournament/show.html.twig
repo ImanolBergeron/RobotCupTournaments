@@ -1,0 +1,607 @@
+{# filepath: /mnt/netta/users/ludevaux/Documents/Final project/sae_s3.01/robotCup/templates/tournament/show.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            overflow-y: auto;
+        }
+
+        .tournament-container {
+            width: 100%;
+            max-width: 1600px;  /* Réduit de 1400px */
+            margin: 60px auto 0;
+            padding: 1rem;      /* Réduit de 2rem */
+            color: #fff;
+            min-height: calc(100vh - 80px);  /* Hauteur minimale avec espace pour la navbar */
+            overflow: visible;  /* Permettre le débordement */
+            padding-bottom: 2rem;  /* Espace en bas */
+        }
+
+        .bracket-scroll-container {
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: visible;
+            padding: 1rem 0;
+            -webkit-overflow-scrolling: touch; /* Pour un meilleur scroll sur iOS */
+        }
+
+        .bracket {
+            width: 200px;
+            display: flex;
+            gap: 4rem; /* Augmenté pour plus d'espace entre les rounds */
+            padding: 2rem;     /* Réduit de 2rem */
+            position: relative;
+            align-items: flex-start;
+            overflow-x: auto;
+            min-height: fit-content;
+            min-width: max-content;  /* S'assurer que le bracket prend toute la largeur nécessaire */
+            padding-bottom: 2rem;  /* Espace en bas */
+            margin-bottom: 2rem;
+        }
+
+        /* Nouveau système de positionnement des matchs */
+        .round {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            min-width: 250px;
+            position: relative;
+        }
+
+        /* Ajustement des espaces pour chaque niveau du tournoi avec plus d'espace */
+        /* Premier tour */
+        .round:nth-child(1) .match-card {
+            margin: 2rem 0;  /* Légèrement augmenté */
+        }
+
+        /* Huitièmes de finale - Augmentation significative des marges */
+        .round:nth-child(2) .match-card {
+            margin-top: 7.4rem;
+            margin-bottom: 7.4rem;
+        }
+
+        /* Quarts de finale - Ajusté en conséquence */
+        .round:nth-child(3) .match-card {
+            margin-top: 18.3rem;
+            margin-bottom: 18.3rem;
+        }
+
+        /* Demi-finales - Ajusté en conséquence */
+        .round:nth-child(4) .match-card {
+            margin-top: 40rem;
+            margin-bottom: 40rem;
+        }
+
+        /* Finale - Ajusté en conséquence */
+        .round:nth-child(5) .match-card {
+            margin-top: 86rem;
+            margin-bottom: 86rem;
+        }
+
+        /* Connexions entre les matchs */
+        .match-card::before {
+            position: absolute;
+            right: -2rem;
+            width: 2px;
+        }
+
+        .match-card:nth-child(odd)::before {
+            top: 50%;
+            height: 100%;
+        }
+
+        .match-card:nth-child(even)::before {
+            bottom: 50%;
+            height: 100%;
+        }
+
+        /* Enlever les overflow qui causent des conflits */
+        .round {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            min-width: 250px;
+            position: relative;
+        }
+
+        /* Ajustement spécifique pour chaque niveau */
+
+
+        /* Titre du round */
+        .round-title {
+            text-align: center;
+            font-size: 1rem;  /* Réduit de 1.2rem */
+            font-weight: bold;
+            padding: 0.5rem;  /* Réduit de 1rem */
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem; /* Réduit de 1rem */
+            color: #60a5fa;
+            border: 1px solid rgba(96, 165, 250, 0.2);
+        }
+
+        /* Carte de match */
+        .match-card {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0.75rem;
+            position: relative;
+            margin: 0.5rem 0;  /* Réduit de 1rem */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            font-size: 0.9rem; /* Ajout pour réduire la taille du texte */
+            width: calc(100% - 2rem);
+            margin-left: 1rem;
+            padding: 0.5rem;
+        }
+
+        .match-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .match-card::before {
+            position: absolute;
+            right: -2rem;
+            width: 2px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .match-card:nth-child(odd)::before {
+            top: 50%;
+            height: calc(100% + 2rem);
+        }
+
+        .match-card:nth-child(even)::before {
+            bottom: 50%;
+            height: calc(200% + 2rem);
+        }
+
+        /* Équipes */
+        .team {
+            padding: 0.5rem;   /* Réduit de 0.75rem */
+            margin: 0.25rem 0; /* Réduit de 0.5rem */
+            border-radius: 0.5rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .team:hover {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0.5rem;
+        }
+
+        /* Style pour l'équipe gagnante */
+        .team.winner {
+            border-left: 3px solid #10b981;
+            padding-left: 0.5rem;
+        }
+
+        /* Nom de l'équipe */
+        .team-name {
+            font-weight: 500;
+            color: #e2e8f0;
+            margin-bottom: 0.25rem;
+        }
+
+        /* Score */
+        .team-score {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #60a5fa;
+        }
+
+        /* Formulaire de score */
+        .match-form {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .score-inputs {
+            display: flex;
+            gap: 0.5rem;      /* Réduit de 1rem */
+            margin-bottom: 1rem;
+        }
+
+        .score-input {
+            width: 50px;      /* Réduit de 60px */
+            padding: 0.25rem; /* Réduit de 0.5rem */
+            border-radius: 0.375rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: transparent;
+            color: white;
+            font-size: 0.9rem;/* Réduit de 1rem */
+            text-align: center;
+        }
+
+        .score-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        /* Bouton de mise à jour */
+        .btn-update {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(45deg, #3b82f6, #0ea5e9);
+            border: none;
+            border-radius: 0.5rem;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-update:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-update:active {
+            transform: translateY(0);
+        }
+
+        /* VS Separator */
+        .vs {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.875rem;
+        }
+
+        /* Match Header */
+        .match-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Match Status */
+        .match-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-scheduled {
+            background: transparent;
+            color: #60a5fa;
+            border: 1px solid currentColor;
+        }
+
+        .status-finished {
+            background: transparent;
+            color: #10b981;
+            border: 1px solid currentColor;
+        }
+
+        /* Match Time */
+        .match-time {
+            font-size: 0.875rem;
+            color: #94a3b8;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .bracket {
+                gap: 2rem;
+            }
+            
+            .round {
+                min-width: 250px;
+            }
+            
+            .match-card::after {
+                width: 2rem;
+                right: -2rem;
+            }
+            
+            .match-card:nth-child(odd)::before {
+                right: -2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .tournament-container {
+                padding: 1rem;
+            }
+            
+            .bracket {
+                padding: 1rem;
+                gap: 1.5rem;
+            }
+            
+            .round {
+                min-width: 200px;
+            }
+            
+            .team-name {
+                font-size: 0.875rem;
+            }
+            
+            .team-score {
+                font-size: 1rem;
+            }
+        }
+
+        /* Style de la barre de défilement */
+        .bracket-scroll-container::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .bracket-scroll-container::-webkit-scrollbar-track {
+            border-radius: 4px;
+        }
+
+        .bracket-scroll-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        .bracket-scroll-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        body {
+            overflow: auto !important;  /* Forcer le scroll sur le body */
+            position: relative !important;  /* Changer fixed en relative */
+        }
+         .bracket-scroll-container {
+            width: 100%;
+            overflow: auto;
+            padding: 1rem 0;
+            -webkit-overflow-scrolling: touch;
+            cursor: grab;
+            position: relative;
+            height: calc(100vh - 120px);  /* Hauteur fixe pour permettre le défilement vertical */
+        }
+
+        .bracket-scroll-container.grabbing {
+            cursor: grabbing;
+            user-select: none;
+        }
+
+        .bracket {
+            display: flex;
+            gap: 4rem;
+            padding: 2rem;
+            position: relative;
+            align-items: flex-start;
+            min-width: max-content;
+            min-height: max-content;
+            padding-bottom: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Désactiver la sélection de texte pendant le glissement */
+        .bracket-scroll-container.grabbing * {
+            user-select: none;
+        }
+
+        /* Styles pour le modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgb(17, 24, 39);
+            padding: 2rem;
+            border-radius: 0.75rem;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+{{ parent() }}
+    <div class="tournament-container">
+        <h1 class="text-center mb-4">{{ title }}</h1>
+        
+        <div class="bracket-scroll-container">
+            <div class="bracket">
+                {% for round in matches|group_matches_by_stage %}
+                    <div class="round">
+                        <div class="round-title">{{ round.stage_name }}</div>
+                        {% for match in round.matches %}
+                            <div class="match-card" onclick="openModal('{{ match.id }}', '{{ match.blueTeam.name }}', '{{ match.greenTeam.name }}', '{{ round.stage_name }}')">
+                                <div class="team {% if match.state == 'PLAYED' and match.blueScore > match.greenScore %}winner{% endif %}">
+                                    <span class="team-name">{{ match.blueTeam.name }}</span>
+                                    {% if match.blueScore is not null %}
+                                        <span class="team-score">{{ match.blueScore }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="team {% if match.state == 'PLAYED' and match.greenScore > match.blueScore %}winner{% endif %}">
+                                    <span class="team-name">{{ match.greenTeam.name }}</span>
+                                    {% if match.greenScore is not null %}
+                                        <span class="team-score">{{ match.greenScore }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    {# Modal pour les scores #}
+    <div id="scoreModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Entrer les scores</h3>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="scoreForm" method="POST">
+                <div class="team-scores">
+                    <div class="score-input-group">
+                        <label id="blueTeamLabel"></label>
+                        <input type="number" name="score1" class="score-input" required min="0">
+                    </div>
+                    <div class="score-input-group">
+                        <label id="greenTeamLabel"></label>
+                        <input type="number" name="score2" class="score-input" required min="0">
+                    </div>
+                </div>
+                <div class="third-place-checkbox" style="display: none;" id="thirdPlaceOption">
+                    <label>
+                        <input type="checkbox" name="create_third_place" value="1">
+                        Créer la petite finale
+                    </label>
+                </div>
+                <button type="submit" class="btn-update">
+                    <i class="bi bi-check-lg"></i> Valider les scores
+                </button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const scrollContainer = document.querySelector('.bracket-scroll-container');
+            let isMouseDown = false;
+            let startX;
+            let scrollLeft;
+
+            scrollContainer.addEventListener('mousedown', function(e) {
+                isMouseDown = true;
+                scrollContainer.classList.add('grabbing');
+                startX = e.pageX - scrollContainer.offsetLeft;
+                scrollLeft = scrollContainer.scrollLeft;
+            });
+
+            scrollContainer.addEventListener('mouseleave', function() {
+                isMouseDown = false;
+                scrollContainer.classList.remove('grabbing');
+            });
+
+            scrollContainer.addEventListener('mouseup', function() {
+                isMouseDown = false;
+                scrollContainer.classList.remove('grabbing');
+            });
+
+            scrollContainer.addEventListener('mousemove', function(e) {
+                if (!isMouseDown) return;
+                e.preventDefault();
+                const x = e.pageX - scrollContainer.offsetLeft;
+                const walk = (x - startX) * 2; // Le multiplicateur définit la vitesse de défilement
+                scrollContainer.scrollLeft = scrollLeft - walk;
+            });
+
+            // Empêcher le comportement de glisser par défaut des images et du texte
+            scrollContainer.addEventListener('dragstart', function(e) {
+                e.preventDefault();
+            });
+            
+            // Optimisation pour le tactile
+            scrollContainer.addEventListener('touchstart', function(e) {
+                startX = e.touches[0].pageX - scrollContainer.offsetLeft;
+                scrollLeft = scrollContainer.scrollLeft;
+                scrollContainer.classList.add('grabbing');
+            });
+
+            scrollContainer.addEventListener('touchmove', function(e) {
+                if (!startX) return;
+                e.preventDefault();
+                const x = e.touches[0].pageX - scrollContainer.offsetLeft;
+                const walk = (x - startX) * 2;
+                scrollContainer.scrollLeft = scrollLeft - walk;
+            });
+
+            scrollContainer.addEventListener('touchend', function() {
+                startX = null;
+                scrollContainer.classList.remove('grabbing');
+            });
+        });
+
+        function openModal(matchId, blueTeam, greenTeam, stageName) {
+            const modal = document.getElementById('scoreModal');
+            const form = document.getElementById('scoreForm');
+            const blueTeamLabel = document.getElementById('blueTeamLabel');
+            const greenTeamLabel = document.getElementById('greenTeamLabel');
+            const thirdPlaceOption = document.getElementById('thirdPlaceOption');
+
+            form.action = "{{ path('tournament_update_match', {'matchId': 'MATCH_ID'}) }}".replace('MATCH_ID', matchId);
+            blueTeamLabel.textContent = blueTeam;
+            greenTeamLabel.textContent = greenTeam;
+
+            // Afficher l'option de petite finale uniquement pour les demi-finales
+            thirdPlaceOption.style.display = stageName === 'Demi-finales' ? 'block' : 'none';
+
+            modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('scoreModal');
+            modal.style.display = 'none';
+        }
+
+        // Fermer le modal si on clique en dehors
+        window.onclick = function(event) {
+            const modal = document.getElementById('scoreModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        document.getElementById('scoreForm').addEventListener('submit', function(e) {
+            const score1 = parseInt(this.querySelector('input[name="score1"]').value);
+            const score2 = parseInt(this.querySelector('input[name="score2"]').value);
+
+            if (score1 === score2) {
+                e.preventDefault();
+                alert('Les scores ne peuvent pas être égaux dans un tournoi');
+                return false;
+            }
+        });
+    </script>
+{% endblock %}

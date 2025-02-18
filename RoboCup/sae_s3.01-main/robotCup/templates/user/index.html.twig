@@ -1,0 +1,278 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des utilisateurs - RobotCup{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .users-container {
+            width: 100%;    
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            color: rgba(243, 244, 246, 1);
+            position: relative;
+            z-index: 20;
+        }
+
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            gap: 1rem;
+        }
+
+        .search-form {
+            flex: 1;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .search-input {
+            flex: 1;
+            background: rgba(17, 24, 39, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.2);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(45deg, #3b82f6, #0ea5e9);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(59, 130, 246, 0.5);
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #ef4444, #dc2626);
+        }
+
+        .btn-edit {
+            background: linear-gradient(45deg, #10b981, #059669);
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #f59e0b, #d97706);
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .users-table {
+            width: 100%;
+            background: rgba(17, 24, 39, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .users-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .users-table thead {
+            background: rgba(17, 24, 39, 0.4);
+        }
+
+        .users-table th,
+        .users-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .users-table tr:hover {
+            background: rgba(17, 24, 39, 0.3);
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin: 0.125rem;
+        }
+
+        .role-admin {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .role-orga {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .role-user {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.3rem;
+        }
+
+        .pagination span, .pagination a {
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.4rem;
+            background: rgba(17, 24, 39, 0.2);
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            min-width: 2.5rem;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pagination span.current {
+            background: linear-gradient(45deg, #3b82f6, #0ea5e9);
+        }
+
+        .pagination a:hover {
+            background: rgba(59, 130, 246, 0.2);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .users-container {
+                padding: 1rem;
+            }
+
+            .header-actions {
+                flex-direction: column;
+            }
+
+            .search-form {
+                width: 100%;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    {{ parent() }}
+    <div class="users-container">
+        <div class="header-actions">
+            <form method="GET" class="search-form">
+                <input type="search" 
+                       name="q" 
+                       value="{{ search }}" 
+                       class="search-input" 
+                       placeholder="{{ "Search" |trans }}">
+                <button type="submit" class="btn">
+                    <i class="bi bi-search"></i> {{ "Search" |trans }}
+                </button>
+            </form>
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('app_user_new') }}" class="btn">
+                    <i class="bi bi-plus-circle"></i> {{ "User_New_Text" |trans}}
+                </a>
+            {% endif %}
+        </div>
+
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">
+                {{ message }}
+            </div>
+        {% endfor %}
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        <div class="users-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>{{ "Email" |trans}}</th>
+                        <th>{{ "FirstName" |trans}}</th>
+                        <th>{{ "LastName" |trans }}</th>
+                        <th>{{ "Roles" |trans}}</th>
+                        <th>{{ "Actions" |trans}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.firstName }}</td>
+                        <td>{{ user.lastName }}</td>
+                        <td>
+                            {% for role in user.roles %}
+                                {% if role == 'ROLE_ADMIN' %}
+                                    <span class="role-badge role-admin">{{ "Admin_Role" |trans}}</span>
+                                {% elseif role == 'ROLE_ORGA' %}
+                                    <span class="role-badge role-orga">{{ "Orga_Role" |trans}}</span>
+                                {% elseif role == 'ROLE_USER' %}
+                                    <span class="role-badge role-user">{{ "User_Role" |trans}}</span>
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td class="actions">
+                            <a href="{{ path('app_user_impersonate', {'id': user.id}) }}" class="btn btn-sm" title="Incarner cet utilisateur">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-sm btn-edit">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <form method="post" action="{{ path('app_user_delete', {'id': user.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');" style="display: inline-block;">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+                                <button class="btn btn-sm btn-danger">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center py-4">{{ "No_User_Found" |trans}}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination">
+            {{ knp_pagination_render(users) }}
+        </div>
+    </div>
+{% endblock %}

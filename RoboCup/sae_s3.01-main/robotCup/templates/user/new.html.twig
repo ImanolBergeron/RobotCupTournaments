@@ -1,0 +1,302 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvel utilisateur - RobotCup{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style data-turbo-track="reload">
+        .form-container {
+            width: 100%;    
+            max-width: 650px;
+            padding: 1rem;
+            color: rgba(243, 244, 246, 1);
+            position: relative;
+            margin: 2rem auto;
+            z-index: 20;
+            animation: fadeIn 0.5s ease-out;
+            min-height: calc(100vh - 4rem);
+            display: flex;
+            align-items: center;
+        }
+
+        body {
+            min-height: 100vh;
+            overflow-y: auto;
+            padding: 0;
+            margin: 0;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -45%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        .form-content {
+            background: rgba(17, 24, 39, 0.2);
+            backdrop-filter: blur(16px);
+            padding: 2rem;
+            border-radius: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            width: 100%;
+            max-height: calc(100vh - 6rem);
+            overflow-y: auto;
+        }
+
+        .form-content:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .form-title {
+            text-align: center;
+            font-size: 2.2rem;
+            line-height: 2.4rem;
+            font-weight: 800;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, #60a5fa 0%, #38bdf8 50%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientFlow 6s linear infinite;
+        }
+
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            color: #94a3b8;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+
+        .input-group:focus-within label {
+            color: #60a5fa;
+        }
+
+        .form-input, .form-control {
+            width: 100%;
+            background: rgba(17, 24, 39, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            outline: none;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .form-input:focus, .form-control:focus {
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.15);
+            background: rgba(17, 24, 39, 0.4);
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-info {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+        }
+
+        .roles-section {
+            margin: 1.5rem 0;
+            background: rgba(17, 24, 39, 0.2);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .roles-section h3 {
+            color: #94a3b8;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .roles-checkboxes {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .role-checkbox {
+            cursor: pointer;
+            width: 1.2rem;
+            height: 1.2rem;
+            border-radius: 0.3rem;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.2s ease;
+        }
+
+        .role-checkbox:checked {
+            border-color: #60a5fa;
+            background-color: #60a5fa;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            background: linear-gradient(135deg, #3b82f6, #0ea5e9);
+            color: white;
+            border: none;
+            padding: 0.875rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            min-width: 120px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-back {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .form-container {
+                padding: 1rem;
+                width: 95%;
+            }
+
+            .form-content {
+                padding: 1.5rem;
+            }
+
+            .form-title {
+                font-size: 1.8rem;
+            }
+
+            .btn {
+                padding: 0.75rem 1.25rem;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    {{ parent() }}
+    <div class="form-container">
+        <div class="form-content">
+            <h1 class="form-title">{{ "User_New_Text" |trans}}</h1>
+
+            <div class="alert alert-info">
+                <i class="bi bi-shield-lock-fill"></i>
+                <div>
+                    <strong>{{"User_Default_Password" |trans}} :</strong>
+                    <span>ChangeMe123!</span>
+                </div>
+            </div>
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            {% for message in app.flashes('error') %}
+                <div class="alert alert-danger">
+                    {{ message }}
+                </div>
+            {% endfor %}
+
+            {{ form_start(form) }}
+                <div class="input-group">
+                    {{ form_label(form.email, 'Email') }}
+                    {{ form_widget(form.email, {'attr': {'class': 'form-input', 'placeholder': 'exemple@email.com'}}) }}
+                    {{ form_errors(form.email) }}
+                </div>
+
+                <div class="input-group">
+                    {{ form_label(form.firstName, 'FirstName') }}
+                    {{ form_widget(form.firstName, {'attr': {'class': 'form-input', 'placeholder': 'John'}}) }}
+                    {{ form_errors(form.firstName) }}
+                </div>
+
+                <div class="input-group">
+                    {{ form_label(form.lastName, 'LastName') }}
+                    {{ form_widget(form.lastName, {'attr': {'class': 'form-input', 'placeholder': 'Doe'}}) }}
+                    {{ form_errors(form.lastName) }}
+                </div>
+
+                <div class="roles-section">
+                    <h3><i class="bi bi-person-badge me-2"></i>{{ "Roles" |trans}}</h3>
+                    <div class="roles-checkboxes">
+                        <div class="role-option">
+                            {{ form_widget(form.roles.0, {'attr': {'class': 'role-checkbox'}}) }}
+                            <label for="{{ form.roles.0.vars.id }}">{{"User_Role" |trans}}</label>
+                        </div>
+                        <div class="role-option">
+                            {{ form_widget(form.roles.1, {'attr': {'class': 'role-checkbox'}}) }}
+                            <label for="{{ form.roles.1.vars.id }}">{{ "Orga_Role" |trans}}</label>
+                        </div>
+                        <div class="role-option">
+                            {{ form_widget(form.roles.2, {'attr': {'class': 'role-checkbox'}}) }}
+                            <label for="{{ form.roles.2.vars.id }}">{{ "Admin_Role" |trans}}</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a href="{{ path('app_user_index') }}" class="btn btn-back">
+                        <i class="bi bi-arrow-left"></i>{{ "Back" |trans}}
+                    </a>
+                    <button type="submit" class="btn">
+                        <i class="bi bi-person-plus"></i> {{ "Create" |trans}}
+                    </button>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

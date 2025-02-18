@@ -1,0 +1,6 @@
+<form method="post" action="{{ path('app_championship_delete', {'id': champion_ship.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce championnat ?');" style="display: inline-block;">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ champion_ship.id) }}">
+    <button class="btn btn-danger">
+        <i class="bi bi-trash"></i> {{"Delete" |trans}}
+    </button>
+</form>

@@ -1,0 +1,282 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Meetings List{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .meetingList-container {
+            width: 100%;    
+            max-width: 1200px;
+            padding: 2rem;
+            margin: 50px auto;
+            color: rgba(243, 244, 246, 1);
+            overflow-y: auto;  
+        }
+
+        .meetings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .meeting-card {
+            background: rgba(17, 24, 39, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .meeting-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            border: 2px solid white;
+        }
+
+        .meeting-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .meeting-date {
+            font-size: 0.875rem;
+            color: #94a3b8;
+        }
+
+        .meeting-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .meeting-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: rgba(17, 24, 39, 0.3);
+            border-radius: 0.75rem;
+        }
+
+        .team {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            max-width: 45%;
+        }
+
+        .team-name {
+            font-size: 1.5em; 
+            font-weight: 600;
+            color: #e5e7eb;
+            margin-bottom: 0.75rem;
+            line-height: 1.2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .blue-score, .green-score {
+            font-size: 4rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .blue-score {
+            color: #60a5fa;
+            text-shadow: 0 0 15px rgba(96, 165, 250, 0.3);
+        }
+
+        .green-score {
+            color: #34d399;
+            text-shadow: 0 0 15px rgba(52, 211, 153, 0.3);
+        }
+
+        .vs {
+            padding: 0 1.5rem;
+            font-weight: 600;
+            color: #94a3b8;
+            font-size: 3.5rem;
+            opacity: 0.7;
+        }
+
+        .no-meetings {
+            text-align: center;
+            font-size: 1.25rem;
+            color: #94a3b8;
+        }
+
+        .modal-content {
+            background-color: rgba(17, 24, 39, 0.9); 
+            color: white;
+            padding: 2rem;
+        }
+
+        .modal-header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display:flex;
+            justify-content: center;  
+            margin-bottom: 2rem;  
+            font-size: 4rem;
+        }
+
+        .modal-body {
+            font-size: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;  
+            max-height: 70vh;  
+            overflow-y: auto;  
+        }
+
+        .modal-team-name {
+            font-size: 1em; 
+            font-weight: 600;
+            color: #e5e7eb;
+            margin-bottom: 0.75rem;
+            line-height: 1.2;
+            white-space: normal; 
+            overflow: visible; 
+        }
+
+        .modal-score {
+            font-size: 4rem; 
+            font-weight: 800;
+        }
+
+        .comments-section {
+            margin-top: 2rem;
+            max-height: 200px;
+            overflow-y: auto;
+            background: rgba(17, 24, 39, 0.6);
+            padding: 1rem;
+            border-radius: 0.75rem;
+            width: 100%;
+            gap: 1rem;
+        }
+
+        .comment {
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border-radius: 0.5rem;
+        }
+
+
+    </style>
+{% endblock %}
+
+{% block body %}
+    {{ parent() }}
+        <div class="meetingList-container">
+            <div class="meetings-grid">
+                {% if meetings|length > 0 %}
+                    {% for meeting in meetings %}
+                        <div class="meeting-card" data-bs-toggle="modal" data-bs-target="#meetingModal{{ meeting.id }}">
+                            <div class="meeting-header">
+                                <div class="meeting-date">{{ meeting.meetingDate|date('d/m/Y H:i') }}</div>
+                                <div class="meeting-status">
+                                    JOUÉ
+                                </div>
+                            </div>
+
+                            <div class="meeting-content">
+                                <div class="team">
+                                    <div class="team-name">{{ meeting.blueTeam.name }}</div>
+                                    <div class="blue-score">{{ meeting.blueScore }}</div>
+                                </div>
+                                
+                                <div class="vs">VS</div>
+                                
+                                <div class="team">
+                                    <div class="team-name">{{ meeting.greenTeam.name }}</div>
+                                    <div class="green-score">{{ meeting.greenScore }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="no-meetings">
+                        Aucun meeting à afficher
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+    <!-- Pop Up -->
+    {% for meeting in meetings %}
+        <div class="modal fade" id="meetingModal{{ meeting.id }}" tabindex="-1" aria-labelledby="meetingModalLabel{{ meeting.id }}" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title " id="meetingModalLabel{{ meeting.id }}">Match: {{ meeting.blueTeam.name }}  VS  {{ meeting.greenTeam.name }}</h5>
+                    </div>
+                    <div class="modal-body">
+                        <div class="meeting-date">{{ meeting.meetingDate|date('d/m/Y H:i') }}</div>
+                        <div class="meeting-status">JOUÉ</div>
+                        <div class="team">
+                            <div class="modal-team-name">{{ meeting.blueTeam.name }}</div>
+                            <div class="modal-score">{{ meeting.blueScore }}</div>
+                        </div>
+
+                        <div class="vs">VS</div>
+
+                        <div class="team">
+                            <div class="modal-team-name">{{ meeting.greenTeam.name }}</div>
+                            <div class="modal-score">{{ meeting.greenScore }}</div>
+                        </div>
+
+                        {% if meeting.comments|length > 0 %}
+                            <div class="comments-section">
+                                {% for comment in meeting.comments %}
+                                    <div class="comment">{{ comment.text }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.team-name').forEach((element) => {
+                const maxLength = 8;
+                const reduceFontLength = 6; 
+
+                const text = element.textContent.trim();
+
+                if (text.length > maxLength) {
+                    element.textContent = text.slice(0, maxLength) + '...';
+                } 
+                if (text.length > reduceFontLength) {
+                    const currentFontSize = window.getComputedStyle(element).fontSize;
+                    const newFontSize = parseFloat(currentFontSize) * 0.7;
+                    element.style.fontSize = `${newFontSize}px`;
+                }
+            });
+        });
+    </script>
+{% endblock %}

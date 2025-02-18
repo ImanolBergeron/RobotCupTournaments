@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profile - RobotCup{% endblock %}
+
+{% block body %}
+    {{ parent() }}
+    <div class="form-container">
+        <div class="form-content">
+            <h1 class="form-title">{{ "Profile" |trans}}</h1>
+
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            {% for message in app.flashes('error') %}
+                <div class="alert alert-danger">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        <form action="{{ path('app_change_password') }}" method="post">
+            <div class="input-group">
+                <label for="current_password">Mot de passe actuel :</label>
+                <input type="password" id="current_password" name="current_password" required>
+            </div>
+
+            <div class="input-group">
+                <label for="new_password">Nouveau mot de passe :</label>
+                <input type="password" id="new_password" name="new_password" required>
+            </div>
+
+            <div class="input-group">
+                <label for="confirm_password">Confirmer le nouveau mot de passe :</label>
+                <input type="password" id="confirm_password" name="confirm_password" required>
+            </div>
+           
+            <div class="form-actions">
+                    <a href="{{ path('app_user_profile') }}" class="btn btn-edit">
+                        <i class="bi bi-pencil"></i> {{ "changer mot de passe " |trans }}
+                    </a>
+            </div>
+            <div class="form-actions">
+                <a href="{{ path('app_user_profile') }}" class="btn btn-back">
+                    <i class="bi bi-arrow-left"></i> {{ "Back" |trans }}
+                </a>
+            </div>
+             
+        </form>
+        
+
+
+            
+        </div>
+    </div>
+{% endblock %}

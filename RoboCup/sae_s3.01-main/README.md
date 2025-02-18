@@ -24,7 +24,7 @@
 2. **Launch the Project**  
    Navigate to the project directory:  
    ```bash
-   cd RobotCup
+   cd RoboCup/sae_s3.01-main/RobotCup
    ```  
    Install Symfony dependencies by running:  
    ```bash

@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier l'utilisateur - RobotCup{% endblock %}
+
+
+
+{% block body %}
+    {{ parent() }}
+    <div class="form-container">
+        <div class="form-content">
+            <h1 class="form-title">{{ "User_Edit_Text" |trans}}</h1>
+
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">
+                {{ message }}
+            </div>
+        {% endfor %}
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+            {{ form_start(form) }}
+                <div class="input-group">
+                    {{ form_label(form.firstName, 'FirstName') }}
+                    {{ form_widget(form.firstName) }}
+                    {{ form_errors(form.firstName) }}
+                </div>
+
+                <div class="input-group">
+                    {{ form_label(form.lastName, 'LastName') }}
+                    {{ form_widget(form.lastName) }}
+                    {{ form_errors(form.lastName) }}
+                </div>
+                {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_ORGA') %}
+                <div class="input-group">
+                    {{ form_label(form.password, 'Password') }}
+                    {{ form_widget(form.password) }}
+                    {{ form_errors(form.password) }}
+                </div>
+                {% endif %}
+
+                {# Add the roles section here #}
+                <div class="roles-section">
+                    <h3>{{ "Roles" |trans}}</h3>
+                    <div class="roles-checkboxes">
+                        <div>
+                            {{ form_widget(form.roles.0, {'attr': {'class': 'role-checkbox'}}) }}
+                            <label for="{{ form.roles.0.vars.id }}">{{"User_Role"  |trans }}</label>
+                        </div>
+                        <div>
+                            {{ form_widget(form.roles.1, {'attr': {'class': 'role-checkbox'}}) }}
+                            <label for="{{ form.roles.1.vars.id }}">{{ "Orga_Role" |trans }}</label>
+                        </div>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <div>
+                                {{ form_widget(form.roles.2, {'attr': {'class': 'role-checkbox'}}) }}
+                                <label for="{{ form.roles.2.vars.id }}">{{"Admin_Role" |trans }}</label>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <br>
+                <button class="btn">{{ "Save" |trans }}</button>
+            {{ form_end(form) }}
+
+            <br>
+
+            <div class="form-actions">
+                <a href="{{ path('app_user_index') }}" class="btn btn-back">
+                    <i class="bi bi-arrow-left"></i> {{ "Back" |trans }}
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,76 @@
+Equipe: Team
+Matchs: Meetings
+Championnat: Championship
+Connexion: 'Log in'
+Tite_Homepage: 'The future of robotic football is here'
+Caption_Homepage: 'Dive into a new era of competition where technology and sport meet. Create your team of robots, take part in the tournaments and make RobotCup history.'
+see_team: 'See my team'
+create_team: 'Create my team'
+Delete_deleteForm: Delete
+User_Roles: 'User Roles'
+LastName: 'Last name'
+FirstName: 'First name'
+Email: Email
+User_New_Text: 'New User'
+User_Default_Password: 'Default Password'
+Admin_Role: Administrator
+Orga_Role: Organisator
+User_Role: User
+Back: Back
+Create: Create
+Search: Search
+Roles: Roles
+Actions: Actions
+No_User_Found: 'No User Found'
+User_Edit_Text: 'Edit User'
+Save: Save
+Users: Users
+Create_Account: 'Create an Account'
+Already_Account: 'Already have an account ?'
+Log_In: 'Log In'
+Invalid_Credentials: 'Invalid Credentials'
+Password: Password
+Remember_Me: 'Rememeber me'
+No_Account: 'No Account ?'
+Register: 'Sign Up'
+Password_Comfirmation: 'Comfirm Password'
+AgreeTerms: 'I agree to the terms'
+Leave_Incarnantion: 'Exit incarnation'
+ChampionShip_Name: 'Championship Name'
+Start_Date: 'Start Date'
+End_Date: 'End Date'
+Delete: Delete
+Update: Update
+Edit_Championship: 'Edit Championship'
+Return_To_List: 'Return to list'
+Create_ChampionShip: 'Create Championship'
+No_Created_ChampionShip: 'No championship created'
+Score_Entries: 'Score Entries'
+No_Match_To_Play: 'No match to play'
+Blue_Team: 'Blue Team'
+Green_Team: 'Green Team'
+Save_Scores: 'Save Scores'
+Team_Name: Team Name
+Structure_Name: Structure Name
+Team_Memebers: Team Memebers
+No_member_Team: No members in the team
+Team_Members: Team Members
+Add_Member: Add a Member
+Structure_Name_Placeholder: 'Enter the name of the structure'
+Team_Name_Placeholder: 'Enter the name of the team'
+Valid_Scores: Score have to be valid
+No_negative_Scores: Score have to be positive
+Error_Saving_Scores: 'Error while saving scores'
+Are_you_sure: 'Are you sure ?'
+Delete_Member_Confirmation: 'Are you sure you want to delete this member ?'
+'Yes': 'Yes'
+Cancel: Cancel
+This_field_is_required: This field is required
+Invalid_email: Invalid email
+Error: Error
+Please_fill_all_required_fields: 'Please fill all required fields'
+Email_must_be_unique: Email must be unique for each member
+Email_Already_Used: Email already used
+Are_You_Sure_Delete_ChampionShip: 'Are you sure you want to delete this championship ?'
+Export_ChampionShip: Export meetings
+Import_ChampionShip: Import meetings

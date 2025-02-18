@@ -1,0 +1,512 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}RobotCup{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style data-turbo-track="reload">
+        
+        .main-container {
+            min-height: 95vh;
+            padding: 4rem 2rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .form-container {
+            width: 100%;    
+            max-width: 800px;
+            margin: 2rem auto;
+            border-radius: 1.5rem;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(10px);
+            padding: 3rem;
+            color: rgba(243, 244, 246, 1);
+            position: relative;
+            z-index: 20;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            overflow-y: auto;
+            max-height: 800px;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 2.5rem;
+            line-height: 1.2;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            background: linear-gradient(45deg, #60a5fa, #38bdf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .form-header {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+        .input-group {
+            margin-bottom: 2rem;
+        }
+
+        .input-group label {
+            display: block;
+            color: #94a3b8;
+            margin-bottom: 1rem;
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+        .input-group input {
+            width: 100%;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            outline: 0;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 1rem 1.25rem;
+            color: #e2e8f0;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            height: 3rem;
+        }
+
+
+        .input-group input:focus {
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.2);
+            background: rgba(15, 23, 42, 0.8);
+            color: #e2e8f0;
+        }
+
+        .members-section {
+            margin-top: 3rem;
+        }
+
+        .members-section h3 {
+            color: #e2e8f0;
+            font-size: 1.75rem;
+            margin-bottom: 2rem;
+            font-weight: 600;
+        }
+
+        .member-entry {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .member-entry.removing {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        .member-info-grid {
+            display: grid;
+            grid-template-columns:1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .member-info-grid .input-group {
+            grid-column: span 1;
+        }
+
+        .member-info-grid .email-group {
+            grid-column: span 2;
+        }
+
+        .remove-member {
+            position: absolute;
+            top: -1rem;
+            right: -1rem;
+            z-index : 5;
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .remove-member:hover {
+            background: rgba(239, 68, 68, 0.3);
+            transform: scale(1.1);
+        }
+
+        .add-member {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 1rem;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin: 2rem 0;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .add-member:hover {
+            background: rgba(16, 185, 129, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .add-member i {
+            font-size: 1.25rem;
+        }
+
+        .sign {
+            display: block;
+            width: 100%;
+            background: linear-gradient(45deg, #3b82f6, #0ea5e9);
+            padding: 1.25rem;
+            border: none;
+            border-radius: 0.75rem;
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.3s ease;
+            margin-top: 3rem;
+            font-size: 1.1rem;
+        }
+
+        .sign:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(59, 130, 246, 0.5);
+        }
+
+        .invalid-feedback {
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: block;
+        }
+
+        .is-invalid {
+            border-color: #ef4444 !important;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+        .email-group {
+            width: 100%; 
+            max-width: 800px;
+        }
+
+        .email-group .input-wrapper {
+            width: 100%;
+        }
+
+        .email-group .form-control {
+            width: 100%;
+        }
+
+
+        @media (max-width: 768px) {
+            .form-container {
+                padding: 2rem;
+                margin: 1rem;
+            }
+            
+            .form-header {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .member-info-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    {{ parent() }}
+    {% if app.user == false %}
+        <script>
+            function RedirectionJavascript(){
+                document.location.href="/login"; 
+            }
+            RedirectionJavascript();
+        </script>
+    {% endif %}
+    
+    <div class="main-container">
+        <div class="form-container">
+            <h1 class="title">{{"create_team" |trans}}</h1>
+            
+            {{ form_start(teamForm) }}
+                <div class="form-header">
+                    <div class="input-group">
+                        {{ form_label(teamForm.name) }}
+                        {{ form_widget(teamForm.name, {
+                            'attr': {
+                                'class': 'form-control',
+                                'placeholder': 'Team_Name_Placeholder'
+                            }
+                        }) }}
+                        {{ form_errors(teamForm.name) }}
+                    </div>
+
+                    <div class="input-group">
+                        {{ form_label(teamForm.structure) }}
+                        {{ form_widget(teamForm.structure, {
+                            'attr': {
+                                'class': 'form-control',
+                                'placeholder': 'Structure_Name_Placeholder'
+                            }
+                        }) }}
+                        {{ form_errors(teamForm.structure) }}
+                    </div>
+
+                    <div class="input-group">
+                        {{ form_label(teamForm.competitions) }}
+                        {{ form_widget(teamForm.competitions, {
+                            'attr': {
+                                'class': 'form-control'
+                            }
+                        }) }}
+                        {{ form_errors(teamForm.competitions) }}
+                    </div>
+                </div>
+
+                <div class="members-section">
+                    <h3>{{"Team_Members" |trans}}</h3>
+                    <div class="members-collection">
+                    </div>
+                    <button type="button" class="add-member">
+                        <i class="bi bi-plus-circle"></i>
+                        {{ "Add_Member" |trans }}
+                    </button>
+                </div>
+
+                <button type="submit" class="sign">{{"create_team" |trans}}</button>
+            {{ form_end(teamForm) }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const membersCollection = document.querySelector('.members-collection');
+            const addMemberButton = document.querySelector('.add-member');
+            let index = 0;
+
+            function createMemberEntry() {
+                const memberEntry = document.createElement('div');
+                memberEntry.className = 'member-entry';
+                memberEntry.style.opacity = '0';
+                memberEntry.style.transform = 'translateY(10px)';
+                
+                memberEntry.innerHTML = `
+                    <button type="button" class="remove-member">&times;</button>
+                    <div class="member-info-grid">
+                        <div class="input-group">
+                            <label for="members_${index}_name">Prénom</label>
+                            <div class="input-wrapper">
+                                <input type="text" id="members_${index}_name" name="members[${index}][name]" 
+                                     class="form-control" placeholder="{{ 'FirstName' |trans }}">
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="members_${index}_surname">Nom</label>
+                            <div class="input-wrapper">
+                                <input type="text" id="members_${index}_surname" name="members[${index}][surname]" 
+                                     class="form-control" placeholder="{{ 'LastName' |trans }}">
+                            </div>
+                        </div>
+                        <div class="input-group email-group">
+                            <label for="members_${index}_email">Email</label>
+                            <div class="input-wrapper">
+                                <input type="email" id="members_${index}_email" name="members[${index}][email]" 
+                                     class="form-control" placeholder="{{ 'Email' |trans }}">
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                memberEntry.querySelector('.remove-member').addEventListener('click', function() {
+                    if (document.querySelectorAll('.member-entry').length >= 1) {
+                        Swal.fire({
+                            title: "{{ 'Are_you_sure' |trans }}",
+                            text: "{{ 'Delete_Member_Confirmation' |trans }}",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: "{{ 'Yes' |trans }}",
+                            cancelButtonText: '{{ "Cancel" |trans }}'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                memberEntry.classList.add('removing');
+                                setTimeout(() => {
+                                    memberEntry.remove();
+                                }, 300);
+                            }
+                        });
+                    }
+                });
+
+                membersCollection.appendChild(memberEntry);
+
+                // Animation d'entrée
+                requestAnimationFrame(() => {
+                    memberEntry.style.transition = 'all 0.3s ease';
+                    memberEntry.style.opacity = '1';
+                    memberEntry.style.transform = 'translateY(0)';
+                });
+
+                // Validation en temps réel
+                const inputs = memberEntry.querySelectorAll('input');
+                inputs.forEach(input => {
+                    input.addEventListener('input', function() {
+                        validateInput(this);
+                    });
+                    input.addEventListener('blur', function() {
+                        validateInput(this);
+                    });
+                });
+
+                index++;
+            }
+
+            function validateInput(input) {
+                const wrapper = input.closest('.input-wrapper');
+                let isValid = true;
+                let errorMessage = '';
+
+                // Supprimer l'ancien message d'erreur s'il existe
+                const existingError = wrapper.querySelector('.invalid-feedback');
+                if (existingError) {
+                    existingError.remove();
+                }
+
+                if (!input.value.trim()) {
+                    isValid = false;
+                    errorMessage = "{{ 'This_field_is_required' |trans }}";
+                } else if (input.type === 'email' && !validateEmail(input.value.trim())) {
+                    isValid = false;
+                    errorMessage = "{{ 'Invalid_email' |trans }}";
+                }
+
+                if (!isValid) {
+                    input.classList.add('is-invalid');
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'invalid-feedback';
+                    errorDiv.textContent = errorMessage;
+                    wrapper.appendChild(errorDiv);
+                } else {
+                    input.classList.remove('is-invalid');
+                }
+
+                return isValid;
+            }
+
+            function validateEmail(email) {
+                const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                return re.test(String(email).toLowerCase());
+            }
+
+            addMemberButton.addEventListener('click', createMemberEntry);
+
+            document.querySelector('form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                let isValid = true;
+                const inputs = document.querySelectorAll('.member-entry input[required]');
+                
+                // Vérifier uniquement les champs des membres s'ils existent
+                if (inputs.length > 0) {
+                    inputs.forEach(input => {
+                        if (!validateInput(input)) {
+                            isValid = false;
+                        }
+                    });
+
+                    if (!isValid) {
+                        Swal.fire({
+                            title: "{{ 'Error' |trans }}",
+                            text: "{{ 'Please_fill_all_required_fields' |trans }}",
+                            icon: 'error',
+                            confirmButtonColor: '#3085d6',
+                        });
+                        return;
+                    }
+
+                    // Vérification des adresses email seulement s'il y a des membres
+                    const emails = new Set();
+                    let hasEmailDuplicate = false;
+                    const emailInputs = document.querySelectorAll('input[type="email"]');
+                    
+                    emailInputs.forEach(input => {
+                        const email = input.value.trim().toLowerCase();
+                        if (emails.has(email)) {
+                            hasEmailDuplicate = true;
+                            input.classList.add('is-invalid');
+                            const wrapper = input.closest('.input-wrapper');
+                            const errorDiv = document.createElement('div');
+                            errorDiv.className = 'invalid-feedback';
+                            errorDiv.textContent = "{{ 'Email_Already_Used' |trans }}";
+                            wrapper.appendChild(errorDiv);
+                        }
+                        emails.add(email);
+                    });
+
+                    if (hasEmailDuplicate) {
+                        Swal.fire({
+                            title: "{{ 'Error' |trans }}",
+                            text: "{{ 'Email_must_be_unique' |trans }}",
+                            icon: 'error',
+                            confirmButtonColor: '#3085d6',
+                        });
+                        return;
+                    }
+                }
+
+                this.submit();
+            });
+
+            // Ne plus créer de membre par défaut
+            // createMemberEntry();
+        });
+    </script>
+{% endblock %}
+
+{% block flash_messages %}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+{% endblock %}

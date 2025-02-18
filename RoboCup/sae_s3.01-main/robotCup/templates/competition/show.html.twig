@@ -1,0 +1,780 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ competition.name }} - RobotCup{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .competition-container {
+            width: 100%;    
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 2rem;
+            color: rgba(243, 244, 246, 1);
+            position: relative;
+            z-index: 20;
+        }
+
+        .competition-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .competition-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #60a5fa, #38bdf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .competition-dates {
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        .competition-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .section-card {
+            background: rgba(17, 24, 39, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease;
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-card:hover:not(.disabled) {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            color: #60a5fa;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #e2e8f0;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .section-description {
+            color: #94a3b8;
+            text-align: center;
+            font-size: 1.1rem;
+            max-width: 80%;
+        }
+
+        .disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            position: relative;
+        }
+
+        .disabled::before {
+            content: 'Disponible après le championnat';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            color: white;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .disabled:hover::before {
+            opacity: 1;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(45deg, #6b7280, #4b5563);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            text-decoration: none;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(107, 114, 128, 0.5);
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        @media (max-width: 768px) {
+            .competition-container {
+                padding: 1rem;
+            }
+
+            .competition-content {
+                grid-template-columns: 1fr;
+            }
+
+            .competition-title {
+                font-size: 2rem;
+            }
+        }
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+        }
+
+        .modal-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(17, 24, 39, 0.95);
+            border-radius: 1rem;
+            padding: 2rem;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: white;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-radius: 0.5rem;
+        }
+
+        .tab-btn.active {
+            color: white;
+            background: rgba(59, 130, 246, 0.1);
+            border-bottom: 2px solid #3b82f6;
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        .team-card {
+            background: rgba(17, 24, 39, 0.3);
+            border-radius: 0.5rem;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.3s ease;
+        }
+
+        .team-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .team-info h4 {
+            color: white;
+            margin-bottom: 0.25rem;
+        }
+
+        .team-info p {
+            color: #94a3b8;
+            font-size: 0.875rem;
+        }
+
+        .modal-footer {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(45deg, #3b82f6, #0ea5e9);
+        }
+               .section-card {
+            background: rgba(17, 24, 39, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease;
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-card:not(.disabled):hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            color: #60a5fa;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #e2e8f0;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .section-description {
+            color: #94a3b8;
+            text-align: center;
+            font-size: 1.1rem;
+            max-width: 80%;
+        }
+
+        .disabled {
+            opacity: 0.5;
+            pointer-events: none;
+            position: relative;
+        }
+
+        .disabled::before {
+            content: 'Disponible après la fin du championnat';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            color: white;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            text-align: center;
+            width: 80%;
+        }
+
+        .disabled:hover::before {
+            opacity: 1;
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .status-completed {
+            background: rgba(107, 114, 128, 0.2);
+            color: #9ca3af;
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .finish-button {
+            margin-top: 1rem;
+            background: linear-gradient(45deg, #ef4444, #dc2626);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .finish-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(239, 68, 68, 0.5);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: rgba(17, 24, 39, 0.95);
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 500px;
+            margin: 50px auto;
+            position: relative;
+        }
+    </style>
+{% endblock %}
+
+
+{% block body %}
+    {{ parent() }}
+    <div class="competition-container">
+        <div class="competition-header">
+            <h1 class="competition-title">{{ competition.name }}</h1>
+            <div class="competition-dates">
+                Du {{ competition.start|date('d/m/Y') }} au {{ competition.end|date('d/m/Y') }}
+            </div>
+        </div>
+
+        <div class="competition-content">
+            {# Carte Championnat #}
+            <div class="section-card">
+                <span class="status-badge {% if competition.championShip.end <= date() %}status-completed{% else %}status-active{% endif %}">
+                    {% if competition.championShip.end <= date() %}
+                        Terminé
+                    {% else %}
+                        En cours
+                    {% endif %}
+                </span>
+                <i class="bi bi-trophy section-icon"></i>
+                <h2 class="section-title">Championnat</h2>
+                <p class="section-description">
+                    Accédez aux matchs du championnat
+                </p>
+                <div class="card-actions">
+                    <a href="{{ path('app_championship_show', {'id': competition.championShip.id}) }}" class="btn btn-secondary">
+                        <i class="bi bi-eye"></i> Voir les matchs
+                    </a>
+                    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_ORGA') %}
+                        {% if competition.championShip.end > date() %}
+                            <button onclick="championshipManager.openModal()" class="btn btn-glow">
+                                <i class="bi bi-people-fill"></i> Gérer les équipes
+                            </button>
+                            <button onclick="finishChampionship()" class="finish-button">
+                                <i class="bi bi-flag-fill"></i> Terminer le championnat
+                            </button>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+
+            {# Carte Tournoi #}
+            <div class="section-card {% if competition.championShip.end > date() %}disabled{% endif %}">
+                <span class="status-badge {% if competition.championShip.end <= date() %}status-active{% else %}status-pending{% endif %}">
+                    {% if competition.championShip.end <= date() %}
+                        Disponible
+                    {% else %}
+                        À venir
+                    {% endif %}
+                </span>
+                <i class="bi bi-diagram-3 section-icon"></i>
+                <h2 class="section-title">Tournoi</h2>
+                <p class="section-description">
+                    {% if competition.championShip.end <= date() %}
+                        Accédez au tournoi des 32 meilleures équipes
+                    {% else %}
+                        Le tournoi sera disponible une fois le championnat terminé
+                    {% endif %}
+                </p>
+                {% if competition.championShip.end <= date() %}
+                    <a href="{{ path('tournament_show', {'championshipId': competition.championShip.id}) }}" class="btn btn-glow mt-4">
+                        <i class="bi bi-play-fill"></i> Accéder au tournoi
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+            {# Ajoutez le modal à la fin du template, juste avant la fin du block body #}
+            <div id="teamManagementModal" class="modal-backdrop" style="display: none;">
+                <div class="modal-container">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Gestion des équipes</h3>
+                        <button type="button" class="modal-close" onclick="championshipManager.closeModal()">&times;</button>
+                    </div>
+                    
+                    <div class="tabs">
+                        <button class="tab-btn active" data-tab="pending">Demandes en attente</button>
+                        <button class="tab-btn" data-tab="active">Équipes actives</button>
+                        <button class="tab-btn" data-tab="removed">Équipes retirées</button>
+                    </div>
+                    
+                    <div class="tab-content">
+                        <div id="pendingTeamsContainer" class="tab-pane active"></div>
+                        <div id="activeTeamsContainer" class="tab-pane"></div>
+                        <div id="removedTeamsContainer" class="tab-pane"></div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button class="btn btn-glow refresh-btn" onclick="championshipManager.refreshChampionship()">
+                            <i class="bi bi-arrow-clockwise"></i> Rafraîchir les matchs
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        {% if is_granted('ROLE_ORGA') or is_granted('ROLE_ADMIN') %}
+            <button class="btn" id="openTimeSlotModal">
+                <i class="bi bi-clock"></i> Gérer les créneaux
+            </button>
+        {% endif %}
+
+        <!-- Modal for Time Slots -->
+        <div class="modal" id="timeSlotModal">
+            <div class="modal-content">
+                <h2>Ajouter des créneaux</h2>
+                {{ form_start(scheduleForm, {'action': path('app_timeslot_create')}) }}
+                    <div class="input-group">
+                        {{ form_label(scheduleForm.date) }}
+                        {{ form_widget(scheduleForm.date, {'attr': {'class': 'form-input'}}) }}
+                        {{ form_errors(scheduleForm.date) }}
+                    </div>
+                    <div class="input-group">
+                        {{ form_label(scheduleForm.start) }}
+                        {{ form_widget(scheduleForm.start, {'attr': {'class': 'form-input'}}) }}
+                        {{ form_errors(scheduleForm.start) }}
+                    </div>
+                    <div class="input-group">
+                        {{ form_label(scheduleForm.end) }}
+                        {{ form_widget(scheduleForm.end, {'attr': {'class': 'form-input'}}) }}
+                        {{ form_errors(scheduleForm.end) }}
+                    </div>
+                    <button type="submit" class="btn">Créer les créneaux</button>
+                {{ form_end(scheduleForm) }}
+            </div>
+        </div>
+    </div>
+    
+{% endblock %}
+
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Ajouter l'ID du championnat pour l'accès global
+        const championshipId = {{ competition.championShip.id }};
+
+        // Code du gestionnaire
+        class ChampionshipManager {
+            constructor() {
+                this.championshipId = championshipId;
+                this.initEventListeners();
+            }
+
+            initEventListeners() {
+                document.querySelectorAll('.tab-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        this.switchTab(e.target.dataset.tab);
+                    });
+                });
+            }
+
+            openModal() {
+                document.getElementById('teamManagementModal').style.display = 'block';
+                this.loadTeams();
+            }
+
+            closeModal() {
+                document.getElementById('teamManagementModal').style.display = 'none';
+            }
+
+            switchTab(tabName) {
+                document.querySelectorAll('.tab-btn').forEach(btn => 
+                    btn.classList.remove('active')
+                );
+                document.querySelectorAll('.tab-pane').forEach(pane => 
+                    pane.classList.remove('active')
+                );
+
+                document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+                document.getElementById(`${tabName}TeamsContainer`).classList.add('active');
+            }
+
+            async loadTeams() {
+                try {
+                    const response = await fetch(`/api/championship/${this.championshipId}/teams`);
+                    const data = await response.json();
+                    this.renderTeams(data);
+                } catch (error) {
+                    console.error('Erreur lors du chargement des équipes:', error);
+                    this.showNotification('Erreur lors du chargement des équipes', 'error');
+                }
+            }
+
+            renderTeams(data) {
+                // Rendu des équipes en attente
+                const pendingHtml = data.pending.map(team => `
+                    <div class="team-card">
+                        <div class="team-info">
+                            <h4>${team.name}</h4>
+                            <div class="team-details">
+                                <p><i class="bi bi-building"></i> ${team.structure}</p>
+                                <p><i class="bi bi-people"></i> ${team.membersCount} membres</p>
+                                <p><i class="bi bi-person"></i> Responsable : ${team.ownerName}</p>
+                                <p><i class="bi bi-calendar"></i> Créée le : ${team.creationDate}</p>
+                            </div>
+                        </div>
+                        <div class="team-actions">
+                            <button onclick="championshipManager.acceptTeam(${team.id})" 
+                                    class="btn btn-success">
+                                <i class="bi bi-check-lg"></i> Accepter
+                            </button>
+                            <button onclick="championshipManager.rejectTeam(${team.id})" 
+                                    class="btn btn-danger">
+                                <i class="bi bi-x-lg"></i> Rejeter
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+                document.getElementById('pendingTeamsContainer').innerHTML = pendingHtml || 
+                    '<p class="empty-message">Aucune demande en attente</p>';
+
+                // Équipes actives
+                const activeHtml = data.active.map(team => `
+                    <div class="team-card">
+                        <div class="team-info">
+                            <h4>${team.name}</h4>
+                            <div class="team-details">
+                                <p><i class="bi bi-building"></i> ${team.structure}</p>
+                                <p><i class="bi bi-people"></i> ${team.membersCount} membres</p>
+                                <p><i class="bi bi-person"></i> Responsable : ${team.ownerName}</p>
+                            </div>
+                        </div>
+                        <button onclick="championshipManager.removeTeam(${team.id})" 
+                                class="btn btn-warning">
+                            <i class="bi bi-trash"></i> Retirer
+                        </button>
+                    </div>
+                `).join('');
+                document.getElementById('activeTeamsContainer').innerHTML = activeHtml || 
+                    '<p class="empty-message">Aucune équipe active</p>';
+
+                // Équipes retirées
+                const removedHtml = data.removed.map(team => `
+                    <div class="team-card">
+                        <div class="team-info">
+                            <h4>${team.name}</h4>
+                            <div class="team-details">
+                                <p><i class="bi bi-building"></i> ${team.structure}</p>
+                                <p><i class="bi bi-calendar-x"></i> Retiré le : ${team.removeDate}</p>
+                            </div>
+                        </div>
+                        <button onclick="championshipManager.restoreTeam(${team.id})" 
+                                class="btn btn-primary">
+                            <i class="bi bi-arrow-counterclockwise"></i> Restaurer
+                        </button>
+                    </div>
+                `).join('');
+                document.getElementById('removedTeamsContainer').innerHTML = removedHtml || 
+                    '<p class="empty-message">Aucune équipe retirée</p>';
+            }
+
+            async acceptTeam(teamId) {
+                await this.executeAction(`/api/championship/${this.championshipId}/teams/${teamId}/accept`, 
+                    'Équipe acceptée avec succès');
+            }
+
+            async removeTeam(teamId) {
+                await this.executeAction(`/api/championship/${this.championshipId}/teams/${teamId}/remove`, 
+                    'Équipe retirée avec succès');
+            }
+
+            async restoreTeam(teamId) {
+                await this.executeAction(`/api/championship/${this.championshipId}/teams/${teamId}/accept`, 
+                    'Équipe restaurée avec succès');
+            }
+
+            async refreshChampionship() {
+                try {
+                    const response = await fetch(`/api/championship/${this.championshipId}/refresh-matches`, {
+                        method: 'POST'
+                    });
+                    
+                    if (response.ok) {
+                        this.showNotification('Championnat rafraîchi avec succès', 'success');
+                        window.location.reload();
+                    } else {
+                        throw new Error('Erreur lors du rafraîchissement');
+                    }
+                } catch (error) {
+                    this.showNotification('Erreur : ' + error.message, 'error');
+                }
+            }
+
+            async executeAction(url, successMessage) {
+                try {
+                    const response = await fetch(url, { method: 'POST' });
+                    
+                    if (response.ok) {
+                        this.showNotification(successMessage, 'success');
+                        await this.loadTeams();
+                    } else {
+                        throw new Error('Erreur lors de l\'opération');
+                    }
+                } catch (error) {
+                    this.showNotification('Erreur : ' + error.message, 'error');
+                }
+            }
+
+            showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = `notification notification-${type}`;
+                notification.innerHTML = `
+                    <div class="notification-content">
+                        <i class="bi bi-info-circle"></i>
+                        <span>${message}</span>
+                    </div>
+                `;
+                document.body.appendChild(notification);
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            }
+        }
+        async function finishChampionship() {
+            if (!confirm('Voulez-vous vraiment terminer le championnat ? Cette action ne peut pas être annulée.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/championship/{{ competition.championShip.id }}/finish`, {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert(data.message);
+                    window.location.reload();
+                } else {
+                    alert(data.error || 'Une erreur est survenue');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Une erreur est survenue lors de la clôture du championnat');
+            }
+        }
+
+        // Créer l'instance quand le DOM est chargé
+        document.addEventListener('DOMContentLoaded', () => {
+            window.championshipManager = new ChampionshipManager();
+        });
+
+        document.getElementById('openTimeSlotModal').addEventListener('click', function() {
+            document.getElementById('timeSlotModal').style.display = 'block';
+        });
+
+        document.getElementById('timeSlotModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.style.display = 'none';
+            }
+        });
+    </script>
+{% endblock %}

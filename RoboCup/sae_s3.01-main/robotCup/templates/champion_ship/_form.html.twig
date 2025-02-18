@@ -1,0 +1,21 @@
+{{ form_start(form, {'attr': {'class': 'championship-form'}}) }}
+    <div class="input-group">
+        {{ form_label(form.name, 'ChampionShip_Name') }}
+        {{ form_widget(form.name, {'attr': {'class': 'form-input'}}) }}
+        {{ form_errors(form.name) }}
+    </div>
+
+    <div class="input-group">
+        {{ form_label(form.start, 'Start_Date') }}
+        {{ form_widget(form.start, {'attr': {'class': 'form-input'}}) }}
+        {{ form_errors(form.start) }}
+    </div>
+
+    <div class="input-group">
+        {{ form_label(form.end, 'End_Date') }}
+        {{ form_widget(form.end, {'attr': {'class': 'form-input'}}) }}
+        {{ form_errors(form.end) }}
+    </div>
+
+    <button class="btn">{{ "Save" |trans }}</button>
+{{ form_end(form) }}

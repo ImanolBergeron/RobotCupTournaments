@@ -1,0 +1,76 @@
+Equipe: Equipe
+Matchs: Matchs
+Championnat: Championnat
+Connexion: Connexion
+Tite_Homepage: "L'avenir du football robotique est ici"
+Caption_Homepage: "Plongez dans une nouvelle ère de compétition où technologie et sport se rencontrent. Créez votre équipe de robots, participez aux tournois et écrivez l'histoire de la RobotCup."
+see_team: 'Voir mon équipe'
+create_team: 'Créer mon équipe'
+Delete_deleteForm: Supprimer
+User_Roles: "Rôles de l'utilisateur"
+LastName: Nom
+FirstName: Prénom
+Email: Email
+User_New_Text: 'Nouvel Utilisateur'
+User_Default_Password: 'Mot de Passe par défaut'
+Admin_Role: Administrateur
+Orga_Role: Organisateur
+User_Role: Utilisateur
+Back: Retour
+Create: Créer
+Search: Rechercher
+Roles: Roles
+Actions: Actions
+No_User_Found: 'Aucun utilisateur trouvé'
+User_Edit_Text: "Modifier l'utilisateur"
+Save: Enregistrer
+Users: Utilisateurs
+Create_Account: 'Créer un compte'
+Already_Account: 'Déjà un compte ?'
+Log_In: Connexion
+Invalid_Credentials: 'Identifiants invalides'
+Password: 'Mot de Passe'
+Remember_Me: 'Se souvenir de moi'
+No_Account: 'Pas de compte ?'
+Register: "S'inscrire"
+Password_Comfirmation: 'Confirmer le mot de passe'
+AgreeTerms: "J'accepte les termes"
+Leave_Incarnantion: "Quitter l'incarnation"
+ChampionShip_Name: 'Nom du championnat'
+Start_Date: 'Date de début'
+End_Date: 'Date de fin'
+Delete: Supprimer
+Update: 'Mettre à jour'
+Edit_Championship: 'Modifier le championnat'
+Return_To_List: 'Revenir à la liste'
+Create_ChampionShip: 'Créer un Championnat'
+No_Created_ChampionShip: 'Aucun championnat créé'
+Score_Entries: 'Saisie des scores'
+No_Match_To_Play: 'Aucune rencontre programmée'
+Blue_Team: 'Equipe Bleue'
+Green_Team: 'Equipe Verte'
+Save_Scores: 'Enregistrer les scores'
+Team_Name: Nom de l'équipe
+Structure_Name: Nom de la structure
+Team_Memebers: Membres de l'équipe
+No_member_Team: Aucun membre dans l'équipe
+Team_Members: Membres de l'équipe
+Add_Member: Ajouter un membre
+Structure_Name_Placeholder: 'Entrez le nom de la structure'
+Team_Name_Placeholder: 'Entrez le nom de l''équipe'
+Valid_Scores: Les scores doivent être valides
+No_negative_Scores: Les scores ne peuvent pas être négatifs
+Error_Saving_Scores: 'Erreur lors de l''enregistrement des scores'
+Are_you_sure: 'Êtes-vous sûr ?'
+Delete_Member_Confirmation: 'Êtes-vous sûr de vouloir supprimer ce membre ?'
+'Yes': Oui
+Cancel: Annuler
+This_field_is_required: Ce champ est requis
+Invalid_email: Email invalide
+Error: Erreur
+Please_fill_all_required_fields: 'Veuillez remplir tous les champs requis'
+Email_must_be_unique: Email doit être unique pour chaque membre
+Email_Already_Used: Email déjà utilisé
+Are_You_Sure_Delete_ChampionShip: 'Êtes-vous sûr de vouloir supprimer ce championnat ?'
+Export_ChampionShip: Exporter les rencontres
+Import_ChampionShip: Importer les rencontres

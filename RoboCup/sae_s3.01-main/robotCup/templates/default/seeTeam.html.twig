@@ -1,0 +1,282 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Équipe{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .page-container {
+            padding: 2rem;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .content-wrapper {
+            max-width: 1200px;
+            margin: 60px auto 0;
+            padding: 0 1rem;
+        }
+
+        .button-container {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background-color: #111827;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .create-team-btn {
+            background: linear-gradient(45deg, #3b82f6, #2563eb);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .create-team-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+        }
+
+        .team-card {
+            background: rgba(17, 24, 39, 0.8);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+        }
+
+        .team-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .competition-badge {
+            background: linear-gradient(45deg, #3b82f6, #2563eb);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .team-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .team-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .structure-name {
+            color: #94a3b8;
+            font-size: 1rem;
+        }
+
+        .members-section {
+            background: rgba(17, 24, 39, 0.5);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .members-title {
+            font-size: 1.25rem;
+            color: #ffffff;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .members-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            color: #ffffff;
+        }
+
+        .members-table th {
+            background: rgba(59, 130, 246, 0.1);
+            color: #60a5fa;
+            font-weight: 600;
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 2px solid rgba(59, 130, 246, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        .members-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+        }
+
+        .members-table tr:hover td {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #94a3b8;
+            padding: 2rem;
+            background: rgba(17, 24, 39, 0.3);
+            border-radius: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .alert {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1000;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            border: 1px solid transparent;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .alert-success {
+            background-color: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .alert-danger {
+            background-color: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content-wrapper {
+                padding: 0 0.5rem;
+            }
+
+            .team-card {
+                padding: 1rem;
+            }
+
+            .members-section {
+                padding: 1rem;
+            }
+
+            .members-table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    {{ parent() }}
+    <div class="page-container">
+        <div class="content-wrapper">
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            
+            {% for message in app.flashes('error') %}
+                <div class="alert alert-danger">
+                    {{ message }}
+                </div>
+            {% endfor %}
+
+            <div class="button-container">
+                <a href="{{ path('app_team') }}" class="create-team-btn">
+                    <i class="fas fa-plus-circle"></i>
+                    {{ "Create_Team"|trans }}
+                </a>
+            </div>
+
+            {% for team in teams %}
+                <div class="team-card">
+                    <div class="competition-badge">
+                        {{ team.competition.name }}
+                    </div>
+
+                    <div class="team-header">
+                        <div>
+                            <h2 class="team-name">{{ team.name }}</h2>
+                            <p class="structure-name">{{ team.structure }}</p>
+                        </div>
+                    </div>
+
+                    {% if team.getMembers|length > 0 %}
+                        <div class="members-section">
+                            <h3 class="members-title">
+                                <i class="fas fa-users"></i>
+                                {{ "Team_Members"|trans }}
+                            </h3>
+                            <table class="members-table">
+                                <thead>
+                                    <tr>
+                                        <th>{{ "FirstName"|trans }}</th>
+                                        <th>{{ "LastName"|trans }}</th>
+                                        <th>{{ "Email"|trans }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for member in team.getMembers %}
+                                        <tr>
+                                            <td>{{ member.name }}</td>
+                                            <td>{{ member.surname }}</td>
+                                            <td>{{ member.email }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-user-slash fa-2x mb-2"></i>
+                            <p>{{ "No_member_Team"|trans }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

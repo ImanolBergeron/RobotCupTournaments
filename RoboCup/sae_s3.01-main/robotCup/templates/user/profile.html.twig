@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profil - RobotCup{% endblock %}
+
+
+
+{% block body %}
+    {{ parent() }}
+    <div class="form-container">
+        <div class="form-content">
+            <h1 class="form-title">{{ "Profil" |trans}}</h1>
+
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">
+                {{ message }}
+            </div>
+        {% endfor %}
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger">
+                {{ message }}
+            </div>
+        {% endfor %}
+        <div class="user-profile">
+            <div class="user-info">
+                <h2>Prenom : {{ user.firstName }}</h2>
+                <h2>Nom : {{ user.lastName }}</h2>
+                <p><strong>{{ "Email" |trans }}:</strong> {{ user.email }}</p>
+
+                
+                 <div class="form-actions">
+                    <a href="{{ path('app_change_password') }}" class="btn btn-edit">
+                        <i class="bi bi-pencil"></i> {{ "changer mot de passe " |trans }}
+                    </a>
+                </div>
+                    
+                
+            </div>
+            
+        </div>
+           
+
+            <br>
+
+            <div class="form-actions">
+                <a href="{{ path('app_home') }}" class="btn btn-back">
+                    <i class="bi bi-arrow-left"></i> {{ "Back" |trans }}
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
